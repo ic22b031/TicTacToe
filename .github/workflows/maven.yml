@@ -37,3 +37,25 @@ jobs:
       with:
         name: Executable-JAR
         path: target/*.jar
+    - name: Create Release
+      if: github.ref == 'refs/heads/main'
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.run_id }}
+        release_name: Release-${{ github.run_id }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      if: github.ref == 'refs/heads/main'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./target/*.jar  # Adjust the path and name according to your project setup
+        asset_name: executable-jar.jar
+        asset_content_type: application/java-archive
