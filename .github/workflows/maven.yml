@@ -28,9 +28,12 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn -B package assembly:single --file pom.xml
     - name: Run Tests
       run: mvn test
     - name: Deploy (only on main branch)
       if: github.ref == 'refs/heads/main'
-      run: mvn deploy
+      uses: actions/upload-artifact@v2
+      with:
+        name: Executable-JAR
+        path: target/*.jar
